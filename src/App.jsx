@@ -13,6 +13,7 @@ const DEFAULT_DURATION_INDEX = 3;
 const POINT_STEP = 0.25;
 const MIN_POINTS = 1;
 const MAX_POINTS = 20;
+const TOTAL_POINTS = 20;
 const TOTAL_EXERCISE_HEIGHT = 986;
 const MIN_EXERCISE_HEIGHT = 120;
 
@@ -49,6 +50,7 @@ function App() {
   const [testTitle, setTestTitle] = useState('Devoir individuel de Mathématique');
   const [teacher, setTeacher] = useState('Prof : Marwane.R');
   const [exercises, setExercises] = useState(DEFAULT_EXERCISES);
+  const [isTotalLocked, setIsTotalLocked] = useState(true);
   const [exerciseHeights, setExerciseHeights] = useState([430, 278, 278]);
   const [isExporting, setIsExporting] = useState(false);
   const [dragState, setDragState] = useState(null);
@@ -57,7 +59,7 @@ function App() {
   const fileInputRefs = useRef({});
 
   const duration = DURATION_OPTIONS[durationIndex];
-  const totalPoints = exercises.reduce((sum, exercise) => sum + exercise.points, 0);
+  const totalPoints = Math.round(exercises.reduce((sum, exercise) => sum + exercise.points, 0) * 100) / 100;
 
   const changeDuration = (step) => {
     setDurationIndex((currentIndex) =>
@@ -76,10 +78,15 @@ function App() {
   };
 
   const canChangeExercisePoints = (index, step) => {
+    const nextTargetPoints = Math.round((exercises[index].points + step * POINT_STEP) * 100) / 100;
+
+    if (!isTotalLocked) {
+      return nextTargetPoints >= MIN_POINTS && nextTargetPoints <= MAX_POINTS;
+    }
+
     const compensationIndex = getCompensationIndex(index);
     if (compensationIndex < 0) return false;
 
-    const nextTargetPoints = Math.round((exercises[index].points + step * POINT_STEP) * 100) / 100;
     const nextCompensationPoints = Math.round((exercises[compensationIndex].points - step * POINT_STEP) * 100) / 100;
 
     return (
@@ -92,6 +99,20 @@ function App() {
 
   const changeExercisePoints = (index, step) => {
     if (!canChangeExercisePoints(index, step)) return;
+
+    if (!isTotalLocked) {
+      setExercises((items) =>
+        items.map((item, itemIndex) =>
+          itemIndex === index
+            ? {
+                ...item,
+                points: Math.round((item.points + step * POINT_STEP) * 100) / 100,
+              }
+            : item
+        )
+      );
+      return;
+    }
 
     const compensationIndex = getCompensationIndex(index);
 
@@ -114,6 +135,29 @@ function App() {
         return item;
       })
     );
+  };
+
+  const changeTotalLock = (checked) => {
+    setIsTotalLocked(checked);
+
+    if (!checked) return;
+
+    setExercises((items) => {
+      const first = items[0].points;
+      const second = items[1].points;
+      const correctedThird = Math.round((TOTAL_POINTS - first - second) * 100) / 100;
+
+      if (correctedThird >= MIN_POINTS && correctedThird <= MAX_POINTS) {
+        return items.map((item, index) =>
+          index === 2 ? { ...item, points: correctedThird } : item
+        );
+      }
+
+      return DEFAULT_EXERCISES.map((defaultExercise, index) => ({
+        ...items[index],
+        points: defaultExercise.points,
+      }));
+    });
   };
 
   const updateImagePosition = (id, nextX, nextY) => {
@@ -299,12 +343,22 @@ function App() {
         <p className="eyebrow">A4 Exam Maker</p>
         <h1>Créer une feuille A4 avec entête fixe</h1>
         <p className="intro">
-          Classe, durée, titre et professeur se modifient directement dans l’entête de l’épreuve.
+          Coche ou décoche le total à 20 pour lier ou délier les points des exercices.
         </p>
 
-        <hr />
+        <label className="total-lock-control">
+          <input
+            type="checkbox"
+            checked={isTotalLocked}
+            onChange={(e) => changeTotalLock(e.target.checked)}
+          />
+          Total bloqué à 20 points
+        </label>
 
-        <p className="points-total">Total : {formatPoints(totalPoints)}</p>
+        <p className={`points-total ${isTotalLocked ? 'locked' : 'free'}`}>
+          {isTotalLocked ? 'Total bloqué : ' : 'Total libre : '}
+          {formatPoints(totalPoints)}
+        </p>
 
         {exercises.map((exercise, index) => (
           <fieldset className="exercise-control-card" key={exercise.id}>
