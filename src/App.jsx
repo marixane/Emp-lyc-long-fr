@@ -22,10 +22,18 @@ const getTitleFontSize = (text) => {
   return 18;
 };
 
+const getProfessorFontSize = (text) => {
+  const length = text.trim().length;
+  if (length > 38) return 12;
+  if (length > 26) return 14;
+  return 16;
+};
+
 function App() {
   const [studentLevel, setStudentLevel] = useState('2 Bac SPF');
   const [durationIndex, setDurationIndex] = useState(DEFAULT_DURATION_INDEX);
-  const [testTitle, setTestTitle] = useState('Devoir individuel de Mathématique N°: 1 Semestre: 1 Lycée El Jamai, Tanger');
+  const [testTitle, setTestTitle] = useState('Devoir individuel de Mathématique');
+  const [teacher, setTeacher] = useState('Prof : Marwane.R');
   const [exercises, setExercises] = useState(DEFAULT_EXERCISES);
   const [isExporting, setIsExporting] = useState(false);
   const [dragState, setDragState] = useState(null);
@@ -171,7 +179,7 @@ function App() {
         <p className="eyebrow">A4 Exam Maker</p>
         <h1>Créer une feuille A4 avec entête fixe</h1>
         <p className="intro">
-          La classe et la durée sont placées à droite de l'épreuve.
+          Entête en 3 cases : classe/durée à gauche, titre au milieu, professeur à droite.
         </p>
 
         <div className="form-group">
@@ -203,12 +211,22 @@ function App() {
         </div>
 
         <div className="form-group">
-          <label>Texte du titre</label>
+          <label>Titre du devoir</label>
           <textarea
             value={testTitle}
             onChange={(e) => setTestTitle(e.target.value)}
-            rows="3"
-            placeholder="Exemple : Devoir individuel de Mathématique N°1 Semestre 1"
+            rows="2"
+            placeholder="Exemple : Devoir individuel de Mathématique"
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Professeur</label>
+          <textarea
+            value={teacher}
+            onChange={(e) => setTeacher(e.target.value)}
+            rows="2"
+            placeholder="Exemple : Prof : Marwane.R"
           />
         </div>
 
@@ -304,24 +322,18 @@ function App() {
 
       <section className="preview-zone">
         <div className="a4-page exam-page" ref={pageRef}>
-          <header className="exam-header">
-            <div className="student-box">
-              <div className="small-badge">N°:</div>
-              <strong>Nom</strong>
-              <span>D'étudiant :</span>
-              <div className="dotted-line" />
+          <header className="exam-header three-cell-header">
+            <div className="header-cell left-header-cell">
+              <strong>Classe : {studentLevel}</strong>
+              <strong>Durée : {duration}</strong>
             </div>
 
-            <div className="title-box">
+            <div className="header-cell middle-header-cell">
               <strong style={{ fontSize: `${getTitleFontSize(testTitle)}px` }}>{testTitle}</strong>
             </div>
 
-            <div className="header-right">
-              <div className="level-box">
-                <span>Classe :</span>
-                <strong>{studentLevel}</strong>
-              </div>
-              <div className="duration-box">{duration}</div>
+            <div className="header-cell right-header-cell">
+              <strong style={{ fontSize: `${getProfessorFontSize(teacher)}px` }}>{teacher}</strong>
             </div>
           </header>
 
