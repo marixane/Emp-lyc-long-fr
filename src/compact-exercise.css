@@ -89,10 +89,10 @@
   position: absolute;
   display: block;
   background: #fff;
-  border: 3px dashed #2563eb;
+  border: 0;
   cursor: move;
   z-index: 30;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  box-shadow: none;
 }
 
 .mask-delete-button {
@@ -130,6 +130,6 @@
 }
 
 .exam-page.is-exporting .white-mask {
-  border-color: #fff;
+  border: 0;
   box-shadow: none;
 }
