@@ -10,12 +10,18 @@ const DEFAULT_EXERCISES = [
 
 const clamp = (value, min, max) => Math.min(Math.max(Number(value), min), max);
 
+const getTitleFontSize = (text) => {
+  const length = text.trim().length;
+  if (length > 95) return 12;
+  if (length > 70) return 14;
+  if (length > 48) return 16;
+  return 18;
+};
+
 function App() {
   const [studentLevel, setStudentLevel] = useState('2 Bac SPF');
   const [duration, setDuration] = useState('2 hs');
-  const [testTitle, setTestTitle] = useState('Devoir individuel de Mathématique');
-  const [testNumber, setTestNumber] = useState('N°: 1 Semestre: 1 Lycée El Jamai, Tanger');
-  const [teacher, setTeacher] = useState('Prof Marwane.R');
+  const [testTitle, setTestTitle] = useState('Devoir individuel de Mathématique N°: 1 Semestre: 1 Lycée El Jamai, Tanger');
   const [exercises, setExercises] = useState(DEFAULT_EXERCISES);
   const [isExporting, setIsExporting] = useState(false);
   const [dragState, setDragState] = useState(null);
@@ -153,7 +159,7 @@ function App() {
         <p className="eyebrow">A4 Exam Maker</p>
         <h1>Créer une feuille A4 avec entête fixe</h1>
         <p className="intro">
-          Clique sur une photo et déplace-la directement dans son exercice. Les sliders restent disponibles.
+          Une seule case titre. Le texte passe à la ligne et diminue automatiquement si nécessaire.
         </p>
 
         <div className="form-group">
@@ -167,18 +173,13 @@ function App() {
         </div>
 
         <div className="form-group">
-          <label>Titre</label>
-          <input value={testTitle} onChange={(e) => setTestTitle(e.target.value)} />
-        </div>
-
-        <div className="form-group">
-          <label>Informations</label>
-          <input value={testNumber} onChange={(e) => setTestNumber(e.target.value)} />
-        </div>
-
-        <div className="form-group">
-          <label>Professeur</label>
-          <input value={teacher} onChange={(e) => setTeacher(e.target.value)} />
+          <label>Titre complet</label>
+          <textarea
+            value={testTitle}
+            onChange={(e) => setTestTitle(e.target.value)}
+            rows="3"
+            placeholder="Exemple : Devoir individuel de Mathématique N°1 Semestre 1"
+          />
         </div>
 
         <hr />
@@ -290,10 +291,8 @@ function App() {
               <span>/20</span>
             </div>
 
-            <div className="info-box">
-              <strong>{testTitle}</strong>
-              <span>{testNumber}</span>
-              <div className="teacher-line">{teacher}</div>
+            <div className="title-box">
+              <strong style={{ fontSize: `${getTitleFontSize(testTitle)}px` }}>{testTitle}</strong>
             </div>
           </header>
 
