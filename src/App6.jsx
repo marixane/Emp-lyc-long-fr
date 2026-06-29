@@ -7,6 +7,7 @@ const MAX_EX = 6;
 const TOTAL = 20;
 const H1 = 986;
 const HN = 840;
+const MIN_H = 120;
 const DURATIONS = ['30 min', '1 h', '1 h 30', '2 h', '2 h 30', '3 h'];
 const IND_TITLE = 'Devoir individuel de Mathématique\nN°: 1 Semestre: 1 Lycée El jamai ,Tanger';
 const HOME_TITLE = 'Devoir à la maison de Mathématique\nN°: 1 Semestre: 1 Lycée El jamai ,Tanger';
@@ -23,7 +24,7 @@ const pts = (n) => {
   arr[n - 1] = Math.round((arr[n - 1] + TOTAL - arr.reduce((s, x) => s + x, 0)) * 100) / 100;
   return arr;
 };
-const ex = (i, p = 5) => ({ id: `${Date.now()}-${i}-${Math.random()}`, points: p, image: null });
+const ex = (i, p = 5) => ({ id: `${Date.now()}-${i}-${Math.random()}`, points: p, image: null, zoom: 100, x: 0, y: 0 });
 const exs = (n) => pts(n).map((p, i) => ex(i, p));
 const heights = (n, h) => n ? Array.from({ length: n }, (_, i) => i === n - 1 ? h - Math.floor(h / n) * (n - 1) : Math.floor(h / n)) : [];
 const titleSize = (t) => t.length > 115 ? 11 : t.length > 90 ? 12 : t.length > 65 ? 14 : t.length > 42 ? 16 : 18;
@@ -38,6 +39,8 @@ export default function App6() {
   const [pages, setPages] = useState([exs(3), ...Array.from({ length: MAX_PAGES - 1 }, () => [])]);
   const [hs, setHs] = useState([heights(3, H1), ...Array.from({ length: MAX_PAGES - 1 }, () => [])]);
   const [exporting, setExporting] = useState(false);
+  const [drag, setDrag] = useState(null);
+  const [resize, setResize] = useState(null);
   const pageRefs = useRef([]);
   const fileRefs = useRef({});
 
@@ -46,6 +49,9 @@ export default function App6() {
   const total = Math.round(all.reduce((s, x) => s + x.e.points, 0) * 100) / 100;
   const startNum = (page) => pages.slice(0, page).reduce((s, p) => s + p.length, 1);
 
+  const updateEx = (page, id, updates) => {
+    setPages((cur) => cur.map((p, pi) => pi === page ? p.map((e) => e.id === id ? { ...e, ...updates } : e) : p));
+  };
   const balance = (next) => {
     const pos = next.flatMap((p, pi) => p.map((_, ei) => ({ pi, ei })));
     const p = pts(pos.length);
@@ -82,15 +88,47 @@ export default function App6() {
   };
   const changeImage = (page, id, file) => {
     if (!file) return;
-    setPages((cur) => cur.map((p, pi) => pi === page ? p.map((e) => e.id === id ? { ...e, image: URL.createObjectURL(file) } : e) : p));
+    updateEx(page, id, { image: { name: file.name, url: URL.createObjectURL(file) }, zoom: 100, x: 0, y: 0 });
+  };
+  const clearImage = (page, id) => updateEx(page, id, { image: null, zoom: 100, x: 0, y: 0 });
+  const startPhotoDrag = (ev, page, e) => {
+    ev.preventDefault();
+    ev.stopPropagation();
+    setResize(null);
+    setDrag({ page, id: e.id, sx: ev.clientX, sy: ev.clientY, x: e.x ?? 0, y: e.y ?? 0 });
+  };
+  const movePhoto = (ev) => {
+    if (!drag) return;
+    updateEx(drag.page, drag.id, { x: clamp(drag.x + ev.clientX - drag.sx, -250, 250), y: clamp(drag.y + ev.clientY - drag.sy, -250, 250) });
+  };
+  const startResize = (ev, page, lower) => {
+    ev.preventDefault();
+    ev.stopPropagation();
+    setDrag(null);
+    setResize({ page, upper: lower - 1, lower, sy: ev.clientY, start: hs[page] });
+  };
+  const moveResize = (ev) => {
+    if (!resize) return;
+    const dy = ev.clientY - resize.sy;
+    const max = resize.start[resize.lower] - MIN_H;
+    const min = MIN_H - resize.start[resize.upper];
+    const safe = clamp(dy, min, max);
+    const next = resize.start.map((h, i) => i === resize.upper ? Math.round(h + safe) : i === resize.lower ? Math.round(h - safe) : h);
+    setHs((cur) => cur.map((p, i) => i === resize.page ? next : p));
+  };
+  const stopMove = () => {
+    setDrag(null);
+    setResize(null);
   };
   const makePdf = async () => {
     setExporting(true);
+    stopMove();
     await new Promise((r) => setTimeout(r, 120));
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
     for (let k = 0; k < active.length; k += 1) {
       const node = pageRefs.current[active[k]];
-      const canvas = await html2canvas(node, { scale: 2, backgroundColor: '#fff' });
+      node.querySelectorAll('textarea').forEach((field) => field.blur());
+      const canvas = await html2canvas(node, { scale: 2, backgroundColor: '#fff', ignoreElements: (el) => el.classList?.contains('photo-overlay-tools') });
       if (k) pdf.addPage('a4', 'portrait');
       pdf.addImage(canvas.toDataURL('image/jpeg', 1), 'JPEG', 0, 0, 210, 297);
     }
@@ -100,11 +138,15 @@ export default function App6() {
   const download = async () => { try { const pdf = await makePdf(); pdf.save('devoir-a4.pdf'); } finally { setExporting(false); } };
 
   const renderList = (page) => <div className="exercise-list">{pages[page].map((e, i) => <section className={`exam-exercise ex-${i + 1}`} key={e.id} style={{ height: `${hs[page][i]}px` }}>
+    {i > 0 && <button type="button" className="resize-handle" onMouseDown={(ev) => startResize(ev, page, i)} aria-label="Modifier la hauteur" />}
     <div className="exercise-title exercise-title-controls">{kind === 'homework' ? <span>Exercice {startNum(page) + i}</span> : <><span>Exercice {startNum(page) + i} : </span><span className="points-decoration">* (</span><button onClick={() => changePoint(page, i, -1)}>−</button><strong>{fmt(e.points)}</strong><button onClick={() => changePoint(page, i, 1)}>+</button><span className="points-decoration">) *</span></>}</div>
-    <div className="exercise-body clickable-photo-zone" onClick={() => !e.image && fileRefs.current[e.id]?.click()}>{e.image ? <img className="draggable-photo" src={e.image} alt="exercice" /> : <div className="empty-zone">Clique ici pour choisir la photo</div>}</div>
+    <div className="exercise-body clickable-photo-zone" onClick={() => !e.image && fileRefs.current[e.id]?.click()}>
+      {e.image && <div className="photo-overlay-tools" onClick={(ev) => ev.stopPropagation()}><button type="button" className="photo-tool-button" onClick={() => fileRefs.current[e.id]?.click()}>Changer photo</button><button type="button" className="photo-tool-button danger" onClick={() => clearImage(page, e.id)}>Supprimer</button><label className="photo-zoom-control">Zoom <input type="range" min="60" max="220" value={e.zoom ?? 100} onChange={(ev) => updateEx(page, e.id, { zoom: clamp(ev.target.value, 60, 220) })} /><span>{e.zoom ?? 100}%</span></label></div>}
+      {e.image ? <img className="draggable-photo" src={e.image.url ?? e.image} alt={e.image.name ?? 'exercice'} draggable="false" onMouseDown={(ev) => startPhotoDrag(ev, page, e)} style={{ transform: `translate(${e.x ?? 0}px, ${e.y ?? 0}px) scale(${(e.zoom ?? 100) / 100})` }} /> : <div className="empty-zone">Clique ici pour choisir la photo</div>}
+    </div>
   </section>)}</div>;
 
-  return <main className="app-shell">
+  return <main className={`app-shell ${resize ? 'is-resizing' : ''}`} onMouseMove={(ev) => { movePhoto(ev); moveResize(ev); }} onMouseUp={stopMove} onMouseLeave={stopMove}>
     <section className="panel">
       <p className="eyebrow">A4 Exam Maker</p><h1>Créer une feuille A4 avec entête fixe</h1><p className="intro">Choisis le type de devoir, puis le nombre d’exercices par page.</p>
       <div className="form-group"><label>Type de devoir</label><div className="duration-control compact-control assignment-control"><button onClick={() => { setKind('individual'); setTitle(IND_TITLE); }} disabled={kind === 'individual'}>Individuel</button><button onClick={() => { setKind('homework'); setTitle(HOME_TITLE); }} disabled={kind === 'homework'}>À la maison</button></div></div>
