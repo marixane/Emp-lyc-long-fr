@@ -206,14 +206,14 @@
 .exam-page.has-bar-ribbon::before {
   content: '';
   position: absolute;
-  left: 31px;
+  left: 30px;
   top: 181px;
   bottom: 34px;
-  width: 24px;
-  border-left: 2px solid rgba(120, 120, 120, 0.45);
-  border-right: 2px solid rgba(120, 120, 120, 0.45);
-  background: linear-gradient(to right, rgba(160, 160, 160, 0.04), rgba(160, 160, 160, 0.12), rgba(160, 160, 160, 0.04));
-  border-radius: 0 0 9px 9px;
+  width: 22px;
+  border-left: 2px solid rgba(120, 120, 120, 0.38);
+  border-right: 2px solid rgba(120, 120, 120, 0.38);
+  background: linear-gradient(to right, rgba(160, 160, 160, 0.02), rgba(160, 160, 160, 0.10), rgba(160, 160, 160, 0.02));
+  border-radius: 0 0 8px 8px;
   z-index: 0;
   pointer-events: none;
 }
@@ -223,14 +223,20 @@
 }
 
 .exam-page.has-bar-ribbon .exam-header,
-.exam-page.has-bar-ribbon .exercise-list,
-.exam-page.has-bar-ribbon .page-number {
+.exam-page.has-bar-ribbon .exercise-list {
   position: relative;
   z-index: 1;
 }
 
 .exam-page.has-bar-ribbon .exam-exercise {
   background: transparent !important;
+}
+
+.exam-page.has-bar-ribbon .page-number {
+  position: absolute !important;
+  right: 24px !important;
+  bottom: 12px !important;
+  z-index: 50 !important;
 }
 
 .exam-page.is-exporting .exercise-body {
