@@ -1,0 +1,32 @@
+.exam-page.is-exporting .exercise-title-controls {
+  grid-template-columns: auto auto 58px auto !important;
+  column-gap: 3px !important;
+}
+
+.exam-page.is-exporting .exercise-title-controls button {
+  display: none !important;
+}
+
+.exam-page.is-exporting .exercise-title-controls .points-decoration:first-of-type {
+  grid-column: 2 !important;
+  transform: none !important;
+  width: auto !important;
+  min-width: auto !important;
+  margin-right: 4px !important;
+}
+
+.exam-page.is-exporting .exercise-title-controls strong {
+  grid-column: 3 !important;
+  width: auto !important;
+  min-width: auto !important;
+  max-width: none !important;
+  padding: 0 !important;
+}
+
+.exam-page.is-exporting .exercise-title-controls .points-decoration:last-of-type {
+  grid-column: 4 !important;
+  transform: none !important;
+  width: auto !important;
+  min-width: auto !important;
+  margin-left: 4px !important;
+}
