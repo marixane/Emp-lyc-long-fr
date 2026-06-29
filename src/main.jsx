@@ -39,6 +39,8 @@ import './points-label-pts.js';
 import './clear-toggle-icons.css';
 import './menu-title-reglages.css';
 import './menu-title-reglages.js';
+import './export-pdf-clear.css';
+import './export-pdf-clear.js';
 
 createRoot(document.getElementById('root')).render(
   <React.StrictMode>
