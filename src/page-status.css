@@ -74,10 +74,14 @@
   color: #334155 !important;
 }
 
-.exam-page.is-exporting:not(.no-pdf-lines) .exercise-body {
-  background: repeating-linear-gradient(white 0px, white 28px, #ddd 29px) !important;
+.exam-page.is-exporting .exercise-body {
+  background-color: #ffffff !important;
+  background-image: linear-gradient(to bottom, transparent 0, transparent 27px, #d9d9d9 28px, #d9d9d9 29px) !important;
+  background-size: 100% 29px !important;
+  background-repeat: repeat !important;
 }
 
 .exam-page.is-exporting.no-pdf-lines .exercise-body {
-  background: #ffffff !important;
+  background-image: none !important;
+  background-color: #ffffff !important;
 }
