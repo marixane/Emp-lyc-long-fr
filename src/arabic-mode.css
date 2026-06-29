@@ -20,3 +20,18 @@ body.arabic-mode .language-toggle {
   border-color: #86efac !important;
   color: #065f46 !important;
 }
+
+body.arabic-mode .exam-page {
+  transform: scaleX(-1) !important;
+  transform-origin: center center !important;
+}
+
+body.arabic-mode .exam-page > * {
+  transform: scaleX(-1) !important;
+  transform-origin: center center !important;
+}
+
+body.arabic-mode .exam-page .page-number,
+body.arabic-mode .exam-page .page-date {
+  transform: translateX(-50%) scaleX(-1) !important;
+}
