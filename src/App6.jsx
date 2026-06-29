@@ -13,6 +13,8 @@ const IND_TITLE_TOP = 'Devoir individuel';
 const HOME_TITLE_TOP = 'Devoir à la maison';
 const TITLE_MIDDLE = 'Mathématique';
 const TITLE_BOTTOM = 'N° : 1 Semestre : 1';
+const RIGHT_TITLE_TOP = 'Lycée El jamai ,Tanger';
+const RIGHT_TITLE_BOTTOM = 'N° : 1 Semestre : 1';
 
 const clamp = (v, a, b) => Math.min(Math.max(Number(v), a), b);
 const fmt = (v) => {
@@ -32,15 +34,15 @@ const blankEx = () => ({ ...ex(0, 0), blank: true });
 const exs = (n) => pts(n).map((p, i) => ex(i, p));
 const heights = (n, h) => n ? Array.from({ length: n }, (_, i) => i === n - 1 ? h - Math.floor(h / n) * (n - 1) : Math.floor(h / n)) : [];
 const visibleCount = (p) => p.filter((e) => !e.blank).length;
-const profSize = (t) => t.length > 38 ? 12 : t.length > 26 ? 14 : 16;
 
 export default function App6() {
   const [kind, setKind] = useState('individual');
   const [titleTop, setTitleTop] = useState(IND_TITLE_TOP);
   const [titleMiddle, setTitleMiddle] = useState(TITLE_MIDDLE);
   const [titleBottom, setTitleBottom] = useState(TITLE_BOTTOM);
+  const [rightTop, setRightTop] = useState(RIGHT_TITLE_TOP);
+  const [rightBottom, setRightBottom] = useState(RIGHT_TITLE_BOTTOM);
   const [level, setLevel] = useState('Classes : 2 Bac SPF');
-  const [teacher, setTeacher] = useState('Prof : Marwane.R\nLycée El jamai ,Tanger');
   const [duration, setDuration] = useState(3);
   const [pages, setPages] = useState([exs(3), ...Array.from({ length: MAX_PAGES - 1 }, () => [])]);
   const [hs, setHs] = useState([heights(3, H1), ...Array.from({ length: MAX_PAGES - 1 }, () => [])]);
@@ -233,6 +235,6 @@ export default function App6() {
       {active.flatMap((page) => pages[page].map((e) => <input key={e.id} ref={(n) => { fileRefs.current[e.id] = n; }} className="hidden-file-input" type="file" accept="image/*" onChange={(ev) => changeImage(page, e.id, ev.target.files?.[0])} />))}
       <button onClick={preview} disabled={exporting}>{exporting ? 'Préparation...' : 'Voir PDF'}</button><button className="secondary" onClick={download} disabled={exporting}>{exporting ? 'Export en cours...' : 'Exporter PDF A4'}</button>
     </section>
-    <section className="preview-zone">{active.map((page, order) => <div className={`a4-page exam-page ${page === 0 ? '' : 'second-page'} ${exporting ? 'is-exporting' : ''} ${exporting && !pdfLines ? 'no-pdf-lines' : ''}`} key={page} ref={(n) => { pageRefs.current[page] = n; }}>{page === 0 && <header className="exam-header three-cell-header"><div className="header-cell left-header-cell class-duration-header"><textarea className="inline-class-input" value={level} onChange={(e) => setLevel(e.target.value)} rows="1" /><div className="tiny-duration-control"><button onClick={() => setDuration((d) => clamp(d - 1, 0, DURATIONS.length - 1))}>−</button><strong>{DURATIONS[duration]}</strong><button onClick={() => setDuration((d) => clamp(d + 1, 0, DURATIONS.length - 1))}>+</button></div></div><div className="header-cell middle-header-cell split-title-cell"><textarea className="inline-title-input title-line title-line-top" value={titleTop} onChange={(e) => setTitleTop(e.target.value)} rows="1" /><textarea className="inline-title-input title-line title-line-middle" value={titleMiddle} onChange={(e) => setTitleMiddle(e.target.value)} rows="1" /><textarea className="inline-title-input title-line title-line-bottom" value={titleBottom} onChange={(e) => setTitleBottom(e.target.value)} rows="1" /></div><div className="header-cell right-header-cell"><textarea className="inline-prof-input" value={teacher} onChange={(e) => setTeacher(e.target.value)} rows="2" style={{ fontSize: `${profSize(teacher)}px` }} /></div></header>}{renderList(page)}<div className="page-number">Page {order + 1}/{active.length}</div></div>)}</section>
+    <section className="preview-zone">{active.map((page, order) => <div className={`a4-page exam-page ${page === 0 ? '' : 'second-page'} ${exporting ? 'is-exporting' : ''} ${exporting && !pdfLines ? 'no-pdf-lines' : ''}`} key={page} ref={(n) => { pageRefs.current[page] = n; }}>{page === 0 && <header className="exam-header three-cell-header"><div className="header-cell left-header-cell class-duration-header"><textarea className="inline-class-input" value={level} onChange={(e) => setLevel(e.target.value)} rows="1" /><div className="tiny-duration-control"><button onClick={() => setDuration((d) => clamp(d - 1, 0, DURATIONS.length - 1))}>−</button><strong>{DURATIONS[duration]}</strong><button onClick={() => setDuration((d) => clamp(d + 1, 0, DURATIONS.length - 1))}>+</button></div></div><div className="header-cell middle-header-cell split-title-cell"><textarea className="inline-title-input title-line title-line-top" value={titleTop} onChange={(e) => setTitleTop(e.target.value)} rows="1" /><textarea className="inline-title-input title-line title-line-middle" value={titleMiddle} onChange={(e) => setTitleMiddle(e.target.value)} rows="1" /><textarea className="inline-title-input title-line title-line-bottom" value={titleBottom} onChange={(e) => setTitleBottom(e.target.value)} rows="1" /></div><div className="header-cell right-header-cell split-right-cell"><textarea className="inline-prof-input right-line right-line-top" value={rightTop} onChange={(e) => setRightTop(e.target.value)} rows="1" /><textarea className="inline-prof-input right-line right-line-bottom" value={rightBottom} onChange={(e) => setRightBottom(e.target.value)} rows="1" /></div></header>}{renderList(page)}<div className="page-number">Page {order + 1}/{active.length}</div></div>)}</section>
   </main>;
 }
