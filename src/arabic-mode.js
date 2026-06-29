@@ -1,4 +1,5 @@
 window.__examLanguage = window.__examLanguage || localStorage.getItem('examLanguage') || 'fr';
+window.__syncingExamLanguage = false;
 
 const AR_TRANSLATIONS = [
   [/Réglages\s*:/g, 'الإعدادات :'],
@@ -58,14 +59,14 @@ const FR_TRANSLATIONS = [
 function translateText(text) {
   let next = text;
   const list = window.__examLanguage === 'ar' ? AR_TRANSLATIONS : FR_TRANSLATIONS;
-  list.forEach(([pattern, replacement]) => {
-    next = next.replace(pattern, replacement);
+  list.forEach(function (entry) {
+    next = next.replace(entry[0], entry[1]);
   });
   return next;
 }
 
 function translateNode(node) {
-  if (!node || !node.textContent) return;
+  if (!node || !node.textContent || node.classList && node.classList.contains('language-toggle')) return;
   const next = translateText(node.textContent);
   if (next !== node.textContent) node.textContent = next;
 }
@@ -74,10 +75,7 @@ function translateInputs() {
   document.querySelectorAll('textarea, input[type="text"]').forEach(function (input) {
     if (!input.value) return;
     const next = translateText(input.value);
-    if (next !== input.value) {
-      input.value = next;
-      input.dispatchEvent(new Event('input', { bubbles: true }));
-    }
+    if (next !== input.value) input.value = next;
   });
 }
 
@@ -92,7 +90,7 @@ function syncLanguageButton() {
     button.addEventListener('click', function () {
       window.__examLanguage = window.__examLanguage === 'ar' ? 'fr' : 'ar';
       localStorage.setItem('examLanguage', window.__examLanguage);
-      syncLanguage();
+      requestAnimationFrame(syncLanguage);
     });
     var title = panel.querySelector('.eyebrow');
     if (title && title.nextSibling) panel.insertBefore(button, title.nextSibling);
@@ -102,18 +100,22 @@ function syncLanguageButton() {
 }
 
 function syncLanguage() {
+  if (window.__syncingExamLanguage) return;
+  window.__syncingExamLanguage = true;
   document.body.classList.toggle('arabic-mode', window.__examLanguage === 'ar');
-  document.documentElement.setAttribute('dir', window.__examLanguage === 'ar' ? 'rtl' : 'ltr');
+  document.documentElement.setAttribute('dir', 'ltr');
   syncLanguageButton();
   translateInputs();
-  document.querySelectorAll('button, strong, span, .eyebrow, .page-date-title, .exercise-title-controls, .bar-ribbon-toggle, .pdf-lines-toggle').forEach(translateNode);
+  document.querySelectorAll('strong, span, .eyebrow, .page-date-title').forEach(translateNode);
+  window.__syncingExamLanguage = false;
 }
 
 syncLanguage();
 setTimeout(syncLanguage, 100);
 setTimeout(syncLanguage, 400);
-setInterval(syncLanguage, 500);
 
 new MutationObserver(function () {
-  syncLanguage();
-}).observe(document.body, { childList: true, subtree: true, characterData: true });
+  if (window.__syncingExamLanguage) return;
+  clearTimeout(window.__languageSyncTimer);
+  window.__languageSyncTimer = setTimeout(syncLanguage, 80);
+}).observe(document.body, { childList: true, subtree: true });
