@@ -5,8 +5,7 @@ function parsePointText(text) {
 
 function formatPts(value) {
   var rounded = Math.round(value * 100) / 100;
-  var text = Number.isInteger(rounded) ? String(rounded) : String(rounded).replace('.', ',');
-  return 'Total : ' + text + ' Pts';
+  return Number.isInteger(rounded) ? String(rounded) : String(rounded).replace('.', ',');
 }
 
 function readVisibleTotal() {
