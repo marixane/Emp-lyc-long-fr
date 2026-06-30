@@ -1,8 +1,8 @@
 .preview-zone .second-page .exam-exercise {
-  min-height: 25px !important;
+  min-height: 15px !important;
 }
 
 .preview-zone .second-page .exam-exercise:last-child {
-  flex: 1 1 25px !important;
-  min-height: 25px !important;
+  flex: 1 1 15px !important;
+  min-height: 15px !important;
 }
