@@ -15,8 +15,15 @@
   cursor: pointer !important;
 }
 
+.assignment-control {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+}
+
 .assignment-control button:nth-of-type(2) {
-  display: none !important;
+  display: block !important;
+  width: 100% !important;
 }
 
 body.arabic-mode .language-toggle {
