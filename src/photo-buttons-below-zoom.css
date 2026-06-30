@@ -22,9 +22,9 @@
 .bar-buttons {
   opacity: 0 !important;
   pointer-events: auto !important;
-  padding: 7px 7px 6px !important;
-  margin: -7px -7px -6px !important;
-  border-radius: 12px !important;
+  padding: 10px 10px 10px !important;
+  margin: -10px -10px -10px !important;
+  border-radius: 14px !important;
   display: grid !important;
   grid-template-columns: repeat(6, 32px) !important;
   grid-template-rows: repeat(2, 18px) !important;
