@@ -41,6 +41,8 @@ body.arabic-mode .exam-page::after {
   direction: rtl !important;
   unicode-bidi: isolate !important;
   text-align: right !important;
+  transform: scaleX(-1) !important;
+  transform-origin: center center !important;
 }
 
 body.arabic-mode .exam-page.has-bar-ribbon .exercise-body::before {
