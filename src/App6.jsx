@@ -37,7 +37,7 @@ const titleTopSize = (text) => fitSize(text, 20, 8, 12, 0.52);
 const rightTopSize = (text) => fitSize(text, 21, 8, 12, 0.55);
 const fmt = (v) => {
   const n = Math.round(Number(v) * 100) / 100;
-  return `${Number.isInteger(n) ? n : String(n).replace('.', ',')} ${n === 1 ? 'Point' : 'Points'}`;
+  return `${Number.isInteger(n) ? n : String(n).replace('.', ',')} Pts`;
 };
 const pts = (n, total = 20) => {
   if (!n) return [];
@@ -277,7 +277,7 @@ export default function App6() {
 
   const renderList = (page) => <div className="exercise-list">{pages[page].map((e, i) => <section className={`exam-exercise ex-${i + 1} ${e.blank ? 'blank-exercise' : ''}`} key={e.id} style={{ height: `${hs[page][i]}px` }}>
     {!e.blank && i > 0 && <button type="button" className="resize-handle" onMouseDown={(ev) => startResize(ev, page, i)} aria-label="Modifier la hauteur" />}
-    {!e.blank && <div className="exercise-title exercise-title-controls">{kind === 'homework' ? <span>Exercice {startNum(page) + visibleCount(pages[page].slice(0, i))}</span> : <><span>Exercice {startNum(page) + visibleCount(pages[page].slice(0, i))} : </span><span className="points-decoration">* (</span><button onClick={() => changePoint(page, i, -1)} disabled={!canChangePoint(page, i, -1)}>−</button><strong>{fmt(e.points)}</strong><button onClick={() => changePoint(page, i, 1)} disabled={!canChangePoint(page, i, 1)}>+</button><span className="points-decoration">) *</span></>}</div>}
+    {!e.blank && <div className="exercise-title exercise-title-controls">{kind === 'homework' ? <span>Exercice {startNum(page) + visibleCount(pages[page].slice(0, i))}</span> : <><span>Exercice {startNum(page) + visibleCount(pages[page].slice(0, i))} : </span><button onClick={() => changePoint(page, i, -1)} disabled={!canChangePoint(page, i, -1)}>−</button><span className="points-decoration">(</span><strong>{fmt(e.points)}</strong><span className="points-decoration">)</span><button onClick={() => changePoint(page, i, 1)} disabled={!canChangePoint(page, i, 1)}>+</button></>}</div>}
     <div className="exercise-body clickable-photo-zone" onClick={() => !e.image && fileRefs.current[e.id]?.click()}>
       {!e.blank && barRibbon && <div className="bar-buttons" onClick={(ev) => ev.stopPropagation()}>{BAR_POINTS.map((label) => <button key={label} type="button" disabled={!canAddBarPoint(e, label)} onClick={() => addBarMark(page, e.id, label)}>{label}</button>)}</div>}
       {!e.blank && barRibbon && (e.barMarks ?? []).map((m) => <span className="bar-mark" key={m.id} onMouseDown={(ev) => startBarDrag(ev, page, e.id, m)} onDoubleClick={(ev) => { ev.preventDefault(); ev.stopPropagation(); deleteBarMark(page, e.id, m.id); }} style={{ left: `${m.x ?? 0}px`, top: `${m.y ?? 34}px` }}>{m.label}</span>)}
