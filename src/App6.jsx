@@ -11,6 +11,7 @@ const BAR_POINTS = ['0,25', '0,75', '1,25', '1,75', '2,25', '2,75', '0,5', '1', 
 const BAR_MARK_TOP_GAP = 19;
 const BAR_MARK_BOTTOM_GAP = 37;
 const IND_TITLE_TOP = 'Devoir individuel';
+const FREE_TITLE_TOP = 'Devoir libre';
 const HOME_TITLE_TOP = 'Devoir à la maison';
 const TITLE_MIDDLE = 'Mathématique';
 const TITLE_BOTTOM = 'N° : 1 Semestre : 1';
@@ -109,7 +110,15 @@ export default function App6() {
   const changeNoteTotal = (targetTotal) => {
     const nextTotal = noteTotal === targetTotal ? null : targetTotal;
     setNoteTotal(nextTotal);
-    if (nextTotal) setPages((cur) => balance(cur, nextTotal));
+    if (!nextTotal) {
+      setTitleTop(FREE_TITLE_TOP);
+      setBarRibbon(false);
+    }
+    if (nextTotal) {
+      setTitleTop(IND_TITLE_TOP);
+      setBarRibbon(true);
+      setPages((cur) => balance(cur, nextTotal));
+    }
   };
   const setCount = (page, d) => {
     if (page > 0 && d > 0 && visibleCount(pages[0]) === 0) return;
@@ -277,7 +286,7 @@ export default function App6() {
 
   const renderList = (page) => <div className="exercise-list">{pages[page].map((e, i) => <section className={`exam-exercise ex-${i + 1} ${e.blank ? 'blank-exercise' : ''}`} key={e.id} style={{ height: `${hs[page][i]}px` }}>
     {!e.blank && i > 0 && <button type="button" className="resize-handle" onMouseDown={(ev) => startResize(ev, page, i)} aria-label="Modifier la hauteur" />}
-    {!e.blank && <div className="exercise-title exercise-title-controls">{kind === 'homework' ? <span>Exercice {startNum(page) + visibleCount(pages[page].slice(0, i))}</span> : <><span>Exercice {startNum(page) + visibleCount(pages[page].slice(0, i))} : </span><button onClick={() => changePoint(page, i, -1)} disabled={!canChangePoint(page, i, -1)}>−</button><span className="points-decoration">(</span><strong>{fmt(e.points)}</strong><span className="points-decoration">)</span><button onClick={() => changePoint(page, i, 1)} disabled={!canChangePoint(page, i, 1)}>+</button></>}</div>}
+    {!e.blank && <div className="exercise-title exercise-title-controls">{kind === 'homework' ? <span>Exercice {startNum(page) + visibleCount(pages[page].slice(0, i))}</span> : !noteTotal ? <span>Exercice {startNum(page) + visibleCount(pages[page].slice(0, i))} :</span> : <><span>Exercice {startNum(page) + visibleCount(pages[page].slice(0, i))} : </span><button onClick={() => changePoint(page, i, -1)} disabled={!canChangePoint(page, i, -1)}>−</button><span className="points-decoration">(</span><strong>{fmt(e.points)}</strong><span className="points-decoration">)</span><button onClick={() => changePoint(page, i, 1)} disabled={!canChangePoint(page, i, 1)}>+</button></>}</div>}
     <div className="exercise-body clickable-photo-zone" onClick={() => !e.image && fileRefs.current[e.id]?.click()}>
       {!e.blank && barRibbon && <div className="bar-buttons" onClick={(ev) => ev.stopPropagation()}>{BAR_POINTS.map((label) => <button key={label} type="button" disabled={!canAddBarPoint(e, label)} onClick={() => addBarMark(page, e.id, label)}>{label}</button>)}</div>}
       {!e.blank && barRibbon && (e.barMarks ?? []).map((m) => <span className="bar-mark" key={m.id} onMouseDown={(ev) => startBarDrag(ev, page, e.id, m)} onDoubleClick={(ev) => { ev.preventDefault(); ev.stopPropagation(); deleteBarMark(page, e.id, m.id); }} style={{ left: `${m.x ?? 0}px`, top: `${m.y ?? 34}px` }}>{m.label}</span>)}
@@ -289,7 +298,7 @@ export default function App6() {
   return <main className={`app-shell ${resize ? 'is-resizing' : ''}`} onMouseMove={(ev) => { moveDrag(ev); moveResize(ev); }} onMouseUp={stopMove} onMouseLeave={stopMove}>
     <section className="panel">
       <p className="eyebrow">A4 Exam Maker</p><h1>Créer une feuille A4 avec entête fixe</h1><p className="intro">Choisis le type de devoir, puis le nombre d’exercices par page.</p>
-      <div className="form-group"><label>Type de devoir</label><div className="duration-control compact-control assignment-control"><button onClick={() => { setKind('individual'); setTitleTop(IND_TITLE_TOP); }} disabled={kind === 'individual'}>Individuel</button><button onClick={() => { setKind('homework'); setTitleTop(HOME_TITLE_TOP); }} disabled={kind === 'homework'}>À la maison</button></div></div>
+      <div className="form-group"><label>Type de devoir</label><div className="duration-control compact-control assignment-control"><button onClick={() => { setKind('individual'); setTitleTop(IND_TITLE_TOP); setNoteTotal((v) => v ?? 20); setBarRibbon(true); }} disabled={kind === 'individual' && noteTotal}>Individuel</button><button onClick={() => { setKind('homework'); setTitleTop(HOME_TITLE_TOP); }} disabled={kind === 'homework'}>À la maison</button></div></div>
       {kind !== 'homework' && <div className="note-scale-control"><div className="note-scale-title">Notes :</div><div className="note-scale-buttons"><button type="button" className={`note-scale-button ${noteTotal === 10 ? 'active' : ''}`} onClick={() => changeNoteTotal(10)}>Sur 10</button><button type="button" className={`note-scale-button ${noteTotal === 20 ? 'active' : ''}`} onClick={() => changeNoteTotal(20)}>Sur 20</button></div><div className="note-scale-counter">Total : {fmt(total)} {noteTotal ? `/ ${noteTotal}` : '/ libre'}</div></div>}
       <button type="button" className={`pdf-lines-toggle ${pdfLines ? 'on' : 'off'}`} onClick={() => setPdfLines((v) => !v)}>{pdfLines ? 'Lignes visibles dans le PDF' : 'Lignes masquées dans le PDF'}</button>
       <button type="button" className={`bar-ribbon-toggle ${barRibbon ? 'on' : 'off'}`} onClick={() => setBarRibbon((v) => !v)}>{barRibbon ? 'Ruban de barème visible' : 'Ruban de barème masqué'}</button>
