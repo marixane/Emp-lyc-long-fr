@@ -103,6 +103,13 @@ function syncDuration() {
   });
 }
 
+function syncDurationAfterReact() {
+  if (window.__examLanguage !== 'ar') return;
+  window.requestAnimationFrame(function () {
+    window.requestAnimationFrame(syncDuration);
+  });
+}
+
 function setFreeTitle(active) {
   var p = pack();
   setTextArea('.title-line-top', active ? p.freeTitle : p.individualTitle);
@@ -146,7 +153,7 @@ function bindDurationButtons() {
   document.querySelectorAll('.tiny-duration-control button').forEach(function (b) {
     if (b.dataset.durationSyncBound === 'true') return;
     b.dataset.durationSyncBound = 'true';
-    b.addEventListener('click', function () { setTimeout(syncDuration, 80); });
+    b.addEventListener('click', syncDurationAfterReact);
   });
 }
 
