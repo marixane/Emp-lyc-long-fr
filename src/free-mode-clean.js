@@ -1,7 +1,11 @@
 function isFreeModeActive() {
   var notes = document.querySelector('.note-scale-control:not(.homework-disabled-note)');
   if (!notes) return false;
-  return !notes.querySelector('.note-scale-button.active');
+
+  var title = document.querySelector('.title-line-top');
+  var value = ((title && (title.value || title.textContent)) || '').trim();
+
+  return value === 'Devoir libre' || value === 'فرض منزلي';
 }
 
 function updateDisplay(node, hidden) {
@@ -22,7 +26,7 @@ function cleanFreeModeExerciseTitles() {
   document.querySelectorAll('.exam-exercise:not(.blank-exercise) .exercise-title-controls').forEach(function (title) {
     var span = title.querySelector('span:first-child');
     var text = (span && span.textContent) || '';
-    var match = text.match(/(Exercice|\u062a\u0645\u0631\u064a\u0646)\s*(\d+)/i);
+    var match = text.match(/(Exercice|تمرين)\s*(\d+)/i);
 
     if (freeMode && span && match) span.textContent = match[1] + ' ' + match[2] + ' :';
 
