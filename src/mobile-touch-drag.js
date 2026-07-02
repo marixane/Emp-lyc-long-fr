@@ -29,6 +29,25 @@ function makeMouseEvent(type, point) {
   });
 }
 
+function getA4MobileScale() {
+  var page = document.querySelector('.a4-page');
+  if (!page) return 1;
+  var rect = page.getBoundingClientRect();
+  if (!rect.width) return 1;
+  return Math.max(0.32, Math.min(1, rect.width / 794));
+}
+
+function amplifyPoint(point) {
+  var scale = getA4MobileScale();
+  var factor = Math.max(1, Math.min(3, 1 / scale));
+  return {
+    clientX: point.clientX * factor,
+    clientY: point.clientY * factor,
+    screenX: point.screenX * factor,
+    screenY: point.screenY * factor
+  };
+}
+
 function isTouchDragTarget(target) {
   return !!(target && target.closest && target.closest('.resize-handle,.draggable-photo,.white-mask,.mask-resize-handle,.bar-mark'));
 }
@@ -39,6 +58,7 @@ function installMobileTouchDrag() {
   window.__mobileTouchDragInstalled = true;
 
   var activeTarget = null;
+  var useAmplify = false;
 
   document.addEventListener('touchstart', function (event) {
     if (!window.matchMedia('(max-width: 1200px)').matches) return;
@@ -46,8 +66,9 @@ function installMobileTouchDrag() {
     var point = getTouchPoint(event);
     if (!point) return;
     activeTarget = event.target.closest('.resize-handle,.draggable-photo,.white-mask,.mask-resize-handle,.bar-mark');
+    useAmplify = activeTarget && activeTarget.classList.contains('resize-handle');
     event.preventDefault();
-    activeTarget.dispatchEvent(makeMouseEvent('mousedown', point));
+    activeTarget.dispatchEvent(makeMouseEvent('mousedown', useAmplify ? amplifyPoint(point) : point));
   }, { passive: false, capture: true });
 
   document.addEventListener('touchmove', function (event) {
@@ -55,19 +76,22 @@ function installMobileTouchDrag() {
     var point = getTouchPoint(event);
     if (!point) return;
     event.preventDefault();
-    document.dispatchEvent(makeMouseEvent('mousemove', point));
+    var p = useAmplify ? amplifyPoint(point) : point;
+    document.dispatchEvent(makeMouseEvent('mousemove', p));
     var shell = document.querySelector('.app-shell');
-    if (shell) shell.dispatchEvent(makeMouseEvent('mousemove', point));
+    if (shell) shell.dispatchEvent(makeMouseEvent('mousemove', p));
   }, { passive: false, capture: true });
 
   function finishTouch(event) {
     if (!activeTarget) return;
     var point = getTouchPoint(event) || { clientX: 0, clientY: 0, screenX: 0, screenY: 0 };
+    var p = useAmplify ? amplifyPoint(point) : point;
     event.preventDefault();
-    document.dispatchEvent(makeMouseEvent('mouseup', point));
+    document.dispatchEvent(makeMouseEvent('mouseup', p));
     var shell = document.querySelector('.app-shell');
-    if (shell) shell.dispatchEvent(makeMouseEvent('mouseup', point));
+    if (shell) shell.dispatchEvent(makeMouseEvent('mouseup', p));
     activeTarget = null;
+    useAmplify = false;
   }
 
   document.addEventListener('touchend', finishTouch, { passive: false, capture: true });
