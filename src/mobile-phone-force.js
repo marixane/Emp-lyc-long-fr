@@ -61,6 +61,21 @@ function applyMobilePhoneForce() {
         top: auto !important;
       }
 
+      .page-date-control,
+      .page-date-picker,
+      .page-date-title,
+      .page-date-input,
+      .page-date-toggle,
+      .page-date-toggle-button {
+        display: none !important;
+        width: 0 !important;
+        height: 0 !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+      }
+
       .panel h1,
       .panel .intro,
       .panel .form-group > label,
