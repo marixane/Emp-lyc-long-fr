@@ -1,7 +1,7 @@
 .photo-overlay-tools {
   left: auto !important;
   right: 8px !important;
-  top: 8px !important;
+  top: 28px !important;
   display: grid !important;
   grid-template-columns: repeat(3, auto) !important;
   gap: 6px !important;
