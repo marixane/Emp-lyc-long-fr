@@ -207,6 +207,11 @@
   cursor: not-allowed;
 }
 
+.span-tools .span-remove-button {
+  background: rgba(220, 38, 38, 0.82);
+  font-size: 13px;
+}
+
 .cahier-footer {
   display: grid;
   grid-template-columns: 1fr 1fr;
