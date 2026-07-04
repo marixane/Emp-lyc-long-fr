@@ -259,6 +259,11 @@ export default function Tab() {
     setSelectedCell(null);
   };
 
+  const totalHours = rows.reduce((total, row) => total + hours.reduce((subtotal, hour) => {
+    const cell = normalizeCell(row.cells[hour]);
+    return subtotal + (!cell.hidden && cell.text.trim() ? cell.span : 0);
+  }, 0), 0);
+
   return <main className="cahier-shell clean-cahier-shell">
     <section className="cahier-preview-zone">
       <div className="a4-page cahier-page">
@@ -268,6 +273,11 @@ export default function Tab() {
           <input value={teacher} onChange={(e) => setTeacher(e.target.value)} onKeyDown={validateOnEnter} />
           <input value={year} onChange={(e) => setYear(e.target.value)} onKeyDown={validateOnEnter} />
         </header>
+
+        <div className="total-hours-control">
+          <span>Total heures :</span>
+          <strong>{totalHours} h</strong>
+        </div>
 
         <table className="timetable-table">
           <thead>
