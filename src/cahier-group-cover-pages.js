@@ -1,5 +1,4 @@
 const GROUP_COVER_COLORS = ['#38bdf8', '#34d399', '#fbbf24', '#f472b6', '#a78bfa'];
-const GROUP_COVER_LOGO_PATH = '/Logo_AR_TM_V.png';
 
 const getHomeworkPageTitleForCover = (page) => String(
   page.querySelector('.homework-page > div:first-child > div:first-child')?.textContent ||
@@ -38,7 +37,39 @@ const splitVisibleHomeworkBlocks = () => {
   return blocks;
 };
 
-const buildGroupCoverPage = (title, index) => {
+const getFilledGroupClassesForCover = () => {
+  const timetablePage = Array.from(document.querySelectorAll('.cahier-page'))
+    .find((page) => page.querySelector('.timetable-table'));
+
+  const groupsWrap = Array.from(timetablePage?.children || []).find((child) => {
+    const style = String(child.getAttribute('style') || '');
+    return style.includes('grid-template-columns: repeat(5');
+  });
+
+  return Array.from(groupsWrap?.children || []).map((group) => ({
+    title: String(group.children?.[0]?.textContent || '').trim(),
+    classes: Array.from(group.children?.[1]?.querySelectorAll('span') || [])
+      .map((span) => String(span.textContent || '').trim())
+      .filter(Boolean)
+  })).filter((group) => group.title && group.classes.length);
+};
+
+const buildClassesPanel = (classes) => {
+  const panel = document.createElement('div');
+  panel.className = 'cahier-group-cover-classes-panel';
+
+  classes.forEach((className, index) => {
+    const badge = document.createElement('div');
+    badge.className = 'cahier-group-cover-class-badge';
+    badge.style.setProperty('--class-index', String(index));
+    badge.textContent = className;
+    panel.append(badge);
+  });
+
+  return panel;
+};
+
+const buildGroupCoverPage = (title, index, classes) => {
   const page = document.createElement('div');
   page.className = 'a4-page cahier-page cahier-group-cover-page';
   page.style.setProperty('--group-cover-color', GROUP_COVER_COLORS[index % GROUP_COVER_COLORS.length]);
@@ -46,27 +77,11 @@ const buildGroupCoverPage = (title, index) => {
   const card = document.createElement('div');
   card.className = 'cahier-group-cover-card';
 
-  const logoRow = document.createElement('div');
-  logoRow.className = 'cahier-group-cover-logo-row';
-
-  const leftLogo = document.createElement('span');
-  leftLogo.className = 'cahier-group-cover-logo';
-  leftLogo.textContent = '🏫';
-
-  const officialLogo = document.createElement('img');
-  officialLogo.className = 'cahier-group-cover-official-logo';
-  officialLogo.src = GROUP_COVER_LOGO_PATH;
-  officialLogo.alt = 'Logo scolaire';
-
-  const rightLogo = document.createElement('span');
-  rightLogo.className = 'cahier-group-cover-logo';
-  rightLogo.textContent = '📚';
-
-  logoRow.append(leftLogo, officialLogo, rightLogo);
-
   const titleNode = document.createElement('div');
   titleNode.className = 'cahier-group-cover-title';
   titleNode.textContent = title;
+
+  const classesPanel = buildClassesPanel(classes);
 
   const subtitle = document.createElement('div');
   subtitle.className = 'cahier-group-cover-subtitle';
@@ -80,7 +95,7 @@ const buildGroupCoverPage = (title, index) => {
     icons.append(span);
   });
 
-  card.append(logoRow, titleNode, subtitle, icons);
+  card.append(titleNode, classesPanel, subtitle, icons);
   page.append(card);
   return page;
 };
@@ -90,9 +105,12 @@ const applyGroupCoverPages = () => {
   document.querySelectorAll('.cahier-group-cover-page').forEach((page) => page.remove());
 
   const blocks = splitVisibleHomeworkBlocks();
+  const filledGroups = getFilledGroupClassesForCover();
+
   blocks.forEach((block, index) => {
     if (!block.pages.length) return;
-    const cover = buildGroupCoverPage(block.title, index);
+    const group = filledGroups[index] || { classes: [] };
+    const cover = buildGroupCoverPage(block.title, index, group.classes);
     block.pages[0].before(cover);
   });
 };
