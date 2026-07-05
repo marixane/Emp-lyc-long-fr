@@ -5,7 +5,7 @@ const HOURS = ['08:00 - 09:00', '09:00 - 10:00', '10:00 - 11:00', '11:00 - 12:00
 const CELL_COLORS = ['#fff3bf', '#d8f3dc', '#dbeafe', '#ffe4e6', '#ede9fe', '#cffafe', '#fef3c7', '#dcfce7', '#e0e7ff', '#fce7f3', '#ccfbf1', '#f5f5f4', '#fbcfe8', '#bfdbfe', '#bbf7d0', '#fed7aa', '#ddd6fe', '#bae6fd', '#fecdd3', '#ccfbf1'];
 const HOMEWORK_COLORS = ['#66c43f', '#b34bd7', '#2f80ed', '#ff3f5f', '#f2994a'];
 const GROUP_COLORS = ['#e0f2fe', '#dcfce7', '#fef3c7', '#fce7f3', '#ede9fe'];
-const GROUP_TITLES = ['Tronc Commun', '1ères Baccalauréat', '2ème Baccalauréat', 'Autres', 'Autres'];
+const GROUP_TITLES = ['Tronc Commun', '1ères Bac', '2ème Bac', 'Autres', 'Autres'];
 const DOT_TEXT = Array.from({ length: 4 }, () => '.'.repeat(74)).join('\n');
 
 const createCell = () => ({ text: '', room: 1, span: 1, hidden: false });
@@ -23,10 +23,10 @@ const subjectTextStyle = { display: 'flex', flexDirection: 'column', alignItems:
 const sessionLineStyle = { display: 'grid', gridTemplateColumns: '52px 1fr', alignItems: 'center', gap: '6px', minHeight: '24px', padding: '4px 7px', border: '1px solid rgba(63, 64, 80, 0.18)', borderRadius: '8px', background: 'rgba(63, 64, 80, 0.045)', color: '#343545', fontFamily: 'Arial, sans-serif', lineHeight: 1, overflow: 'hidden' };
 const sessionHourStyle = { display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: '18px', borderRadius: '6px', background: 'var(--homework-color)', color: 'white', fontSize: '12px', fontWeight: 900, whiteSpace: 'nowrap' };
 const sessionClassStyle = { display: 'block', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '14px', fontWeight: 900, textTransform: 'uppercase' };
-const levelGroupsStyle = { display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '9px', marginTop: '9px' };
-const levelGroupTitleStyle = { marginBottom: '7px', color: '#111827', fontSize: '10px', fontWeight: 900, textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.3px' };
-const levelGroupClassesStyle = { display: 'flex', flexWrap: 'wrap', justifyContent: 'center', alignContent: 'flex-start', gap: '5px', minHeight: '46px', color: 'rgba(17, 17, 17, 0.45)', fontSize: '9px', fontWeight: 800, lineHeight: 1.1, textAlign: 'center' };
-const levelChipStyle = { display: 'inline-flex', alignItems: 'center', justifyContent: 'center', maxWidth: '100%', padding: '4px 7px', borderRadius: '999px', border: '1px solid rgba(17, 17, 17, 0.18)', background: 'white', color: '#111827', fontSize: '9px', fontWeight: 900, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', cursor: 'grab', boxShadow: '0 1px 3px rgba(17, 17, 17, 0.12)' };
+const levelGroupsStyle = { display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '10px', marginTop: '10px' };
+const levelGroupTitleStyle = { marginBottom: '8px', color: '#111827', fontSize: '12px', fontWeight: 900, textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.3px' };
+const levelGroupClassesStyle = { display: 'flex', flexWrap: 'wrap', justifyContent: 'center', alignContent: 'flex-start', gap: '6px', minHeight: '54px', color: 'rgba(17, 17, 17, 0.45)', fontSize: '10px', fontWeight: 800, lineHeight: 1.1, textAlign: 'center' };
+const levelChipStyle = { display: 'inline-flex', alignItems: 'center', justifyContent: 'center', maxWidth: '100%', padding: '5px 8px', borderRadius: '999px', border: '1px solid rgba(17, 17, 17, 0.18)', background: 'white', color: '#111827', fontSize: '10px', fontWeight: 900, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', cursor: 'grab', boxShadow: '0 1px 3px rgba(17, 17, 17, 0.12)' };
 
 const getCellColor = (text) => {
   const normalized = String(text ?? '').toLowerCase().replace(/[\s-]/g, '').trim();
@@ -58,8 +58,8 @@ const chunkEntries = (entries, size) => entries.reduce((pages, entry, index) => 
 const getClassLevel = (className) => {
   const normalized = String(className ?? '').toUpperCase().replace(/[\s-]/g, '');
   if (normalized.startsWith('TC') || normalized.includes('TRONCCOMMUN')) return 'Tronc Commun';
-  if (normalized.startsWith('1BAC') || normalized.startsWith('1ERE') || normalized.startsWith('1ÈRE')) return '1ères Baccalauréat';
-  if (normalized.startsWith('2BAC') || normalized.startsWith('2EME') || normalized.startsWith('2ÈME')) return '2ème Baccalauréat';
+  if (normalized.startsWith('1BAC') || normalized.startsWith('1ERE') || normalized.startsWith('1ÈRE')) return '1ères Bac';
+  if (normalized.startsWith('2BAC') || normalized.startsWith('2EME') || normalized.startsWith('2ÈME')) return '2ème Bac';
   return 'Autres';
 };
 
@@ -113,7 +113,7 @@ export default function Tab() {
       const className = cell.text.trim();
       if (!cell.hidden && className) {
         const level = getClassLevel(className);
-        const targetIndex = level === 'Tronc Commun' ? 0 : level === '1ères Baccalauréat' ? 1 : level === '2ème Baccalauréat' ? 2 : 3;
+        const targetIndex = level === 'Tronc Commun' ? 0 : level === '1ères Bac' ? 1 : level === '2ème Bac' ? 2 : 3;
         if (!autoGroups[targetIndex].classes.includes(className)) autoGroups[targetIndex].classes.push(className);
       }
     });
@@ -268,7 +268,7 @@ export default function Tab() {
           </tr>)}</tbody>
         </table>
         <div style={levelGroupsStyle}>
-          {classGroups.map((group, index) => <div key={`${GROUP_TITLES[index]}-${index}`} style={{ minHeight: '84px', padding: '9px 8px', border: '2px solid rgba(17, 17, 17, 0.55)', borderRadius: '14px', background: `linear-gradient(180deg, ${GROUP_COLORS[index]}, white)`, boxShadow: '0 4px 10px rgba(17, 17, 17, 0.12)', overflow: 'hidden' }} onDragOver={(event) => { if (draggedClass) event.preventDefault(); }} onDrop={(event) => { event.preventDefault(); if (draggedClass) moveClassToGroup(draggedClass, index); setDraggedClass(null); }}>
+          {classGroups.map((group, index) => <div key={`${GROUP_TITLES[index]}-${index}`} style={{ minHeight: '96px', padding: '11px 9px', border: '2px solid rgba(17, 17, 17, 0.55)', borderRadius: '14px', background: `linear-gradient(180deg, ${GROUP_COLORS[index]}, white)`, boxShadow: '0 4px 10px rgba(17, 17, 17, 0.12)', overflow: 'hidden' }} onDragOver={(event) => { if (draggedClass) event.preventDefault(); }} onDrop={(event) => { event.preventDefault(); if (draggedClass) moveClassToGroup(draggedClass, index); setDraggedClass(null); }}>
             <div style={levelGroupTitleStyle} contentEditable suppressContentEditableWarning onKeyDown={validateOnEnter}>{GROUP_TITLES[index]}</div>
             <div style={levelGroupClassesStyle}>{group.classes.length ? group.classes.map((className) => <span key={className} style={levelChipStyle} draggable onDragStart={(event) => { event.dataTransfer.effectAllowed = 'move'; event.dataTransfer.setData('text/plain', className); setDraggedClass(className); }} onDragEnd={() => setDraggedClass(null)}>{className}</span>) : 'Déposer ici'}</div>
           </div>)}
