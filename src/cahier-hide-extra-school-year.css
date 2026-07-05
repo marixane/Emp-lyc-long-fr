@@ -1,0 +1,3 @@
+body.cahier-tab-active .cahier-header input[aria-label="Année scolaire automatique"] {
+  display: none !important;
+}
