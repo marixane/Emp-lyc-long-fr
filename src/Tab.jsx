@@ -27,13 +27,54 @@ const dotTextStyle = {
 };
 
 const subjectTextStyle = {
-  whiteSpace: 'pre',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'stretch',
+  justifyContent: 'center',
+  gap: '6px',
+  padding: '8px 10px',
+  textAlign: 'center',
+  overflow: 'hidden'
+};
+
+const sessionLineStyle = {
+  display: 'grid',
+  gridTemplateColumns: '52px 1fr',
+  alignItems: 'center',
+  gap: '6px',
+  minHeight: '24px',
+  padding: '4px 7px',
+  border: '1px solid rgba(63, 64, 80, 0.18)',
+  borderRadius: '8px',
+  background: 'rgba(63, 64, 80, 0.045)',
+  color: '#343545',
+  fontFamily: 'Arial, sans-serif',
+  lineHeight: 1,
+  overflow: 'hidden'
+};
+
+const sessionHourStyle = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  height: '18px',
+  borderRadius: '6px',
+  background: 'var(--homework-color)',
+  color: 'white',
+  fontSize: '10px',
+  fontWeight: 900,
+  whiteSpace: 'nowrap'
+};
+
+const sessionClassStyle = {
+  display: 'block',
+  minWidth: 0,
   overflow: 'hidden',
-  textOverflow: 'clip',
-  fontSize: '18px',
-  lineHeight: 1.2,
-  paddingLeft: '10px',
-  paddingRight: '10px'
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
+  fontSize: '14px',
+  fontWeight: 900,
+  textTransform: 'uppercase'
 };
 
 const getCellColor = (text) => {
@@ -90,7 +131,7 @@ export default function Tab() {
     const sessions = hours.reduce((list, hour) => {
       const cell = normalizeCell(row.cells[hour]);
       if (!cell.hidden && cell.text.trim()) {
-        list.push(`${getHourStart(hour)}/${cell.text.trim()}`);
+        list.push({ hour: getHourStart(hour), className: cell.text.trim() });
       }
       return list;
     }, []);
@@ -98,7 +139,7 @@ export default function Tab() {
 
     return {
       date: `${String(row.day || DAYS[index]).toUpperCase()} ${dayNumber}/09`,
-      subject: sessions.join('\n'),
+      sessions,
       text: DOT_TEXT,
       color: HOMEWORK_COLORS[index]
     };
@@ -236,7 +277,7 @@ export default function Tab() {
       <div className="a4-page cahier-page homework-page">
         {homeworkEntries.map((entry) => <section className="homework-entry" key={entry.date} style={{ '--homework-color': entry.color }}>
           <div className="homework-date" contentEditable suppressContentEditableWarning onKeyDown={validateOnEnter}>{entry.date}</div>
-          <div className="homework-content"><div className="homework-subject" contentEditable suppressContentEditableWarning onKeyDown={validateOnEnter} style={entry.subject ? subjectTextStyle : undefined}>{entry.subject}</div><div className="homework-text" contentEditable suppressContentEditableWarning onKeyDown={validateOnEnter} style={dotTextStyle}>{entry.text}</div></div>
+          <div className="homework-content"><div className="homework-subject" contentEditable={entry.sessions.length === 0} suppressContentEditableWarning onKeyDown={validateOnEnter} style={entry.sessions.length ? subjectTextStyle : undefined}>{entry.sessions.map((session) => <div key={`${session.hour}-${session.className}`} style={sessionLineStyle}><span style={sessionHourStyle}>{session.hour}</span><span style={sessionClassStyle}>{session.className}</span></div>)}</div><div className="homework-text" contentEditable suppressContentEditableWarning onKeyDown={validateOnEnter} style={dotTextStyle}>{entry.text}</div></div>
         </section>)}
       </div>
     </section>
