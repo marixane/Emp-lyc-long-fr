@@ -1,3 +1,21 @@
+const COVER_LOGO_PATH = '/Logo_AR_TM_V.png';
+
+const applyExactCoverLogo = () => {
+  if (!document.body.classList.contains('cahier-tab-active')) return;
+  const logo = document.querySelector('#cahier-cover-page img[alt="Logo Royaume du Maroc"]');
+  if (!logo) return;
+  if (logo.getAttribute('src') !== COVER_LOGO_PATH) logo.setAttribute('src', COVER_LOGO_PATH);
+  logo.style.width = '96px';
+  logo.style.height = 'auto';
+  logo.style.objectFit = 'contain';
+  logo.style.display = 'block';
+  logo.style.margin = '0 auto 8px';
+  logo.style.background = 'transparent';
+  logo.style.border = '0';
+  logo.style.boxShadow = 'none';
+  logo.style.filter = 'none';
+};
+
 const applyCahierButtonOffset = () => {
   const existing = document.getElementById('cahier-span-buttons-left-style');
   if (existing) existing.remove();
@@ -14,6 +32,7 @@ const applyCahierButtonOffset = () => {
 };
 
 const clearCahierForcedScrollLock = () => {
+  applyExactCoverLogo();
   applyCahierButtonOffset();
   document.documentElement.style.overflow = '';
   document.documentElement.style.height = '';
