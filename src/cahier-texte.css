@@ -60,10 +60,20 @@ body.cahier-tab-active .exercise-line-count-overlay {
 
 .clean-cahier-shell .cahier-preview-zone {
   flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  background: transparent;
 }
 
 .cahier-page {
+  box-sizing: border-box;
+  width: 210mm;
+  height: 297mm;
+  margin: 0;
   padding: 16px 22px;
+  overflow: hidden;
+  background: white;
   font-family: Arial, sans-serif;
   color: #111;
 }
@@ -452,7 +462,7 @@ body.cahier-tab-active .exercise-line-count-overlay {
 }
 
 .activity-page {
-  margin-top: 10px;
+  margin-top: 0;
   padding: 0;
   overflow: hidden;
 }
