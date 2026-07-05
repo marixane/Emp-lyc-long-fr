@@ -278,6 +278,30 @@ export default function Tab() {
     return subtotal + (!cell.hidden && cell.text.trim() ? cell.span : 0);
   }, 0), 0);
 
+  const activityTitleStyle = {
+    boxSizing: 'border-box',
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '0 4px',
+    outline: 'none',
+    overflow: 'hidden',
+    textAlign: 'center',
+    fontSize: '22px',
+    fontWeight: 900,
+    lineHeight: 1.05
+  };
+
+  const activityLabelStyle = {
+    ...activityTitleStyle,
+    fontSize: '22px',
+    lineHeight: 1.05,
+    whiteSpace: 'normal',
+    wordBreak: 'break-word'
+  };
+
   return <main className="cahier-shell clean-cahier-shell">
     <section className="cahier-preview-zone">
       <div className="a4-page cahier-page">
@@ -382,15 +406,15 @@ export default function Tab() {
           </colgroup>
           <thead>
             <tr className="activity-top-row">
-              <th colSpan="3"><textarea defaultValue="Séquence:" /></th>
-              <th colSpan="3"><textarea defaultValue="Compétences:" /></th>
+              <th colSpan="3"><div contentEditable suppressContentEditableWarning onKeyDown={validateOnEnter} style={activityTitleStyle}>Séquence:</div></th>
+              <th colSpan="3"><div contentEditable suppressContentEditableWarning onKeyDown={validateOnEnter} style={activityTitleStyle}>Compétences:</div></th>
             </tr>
             <tr className="activity-label-row">
-              <th><textarea defaultValue="Date" /></th>
-              <th><textarea defaultValue="Heure" /></th>
-              <th><textarea defaultValue="Classe" /></th>
+              <th><div contentEditable suppressContentEditableWarning onKeyDown={validateOnEnter} style={activityLabelStyle}>Date</div></th>
+              <th><div contentEditable suppressContentEditableWarning onKeyDown={validateOnEnter} style={activityLabelStyle}>Heure</div></th>
+              <th><div contentEditable suppressContentEditableWarning onKeyDown={validateOnEnter} style={activityLabelStyle}>Classe</div></th>
               <th colSpan="2"><textarea aria-label="Espace libre" /></th>
-              <th><textarea defaultValue="Remarques" /></th>
+              <th><div contentEditable suppressContentEditableWarning onKeyDown={validateOnEnter} style={activityLabelStyle}>Remarques</div></th>
             </tr>
           </thead>
           <tbody>
