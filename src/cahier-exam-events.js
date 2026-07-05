@@ -123,24 +123,31 @@ const pushNewClassesToTroncCommun = () => {
 let cahierDateFixTimer = 0;
 const scheduleCahierDateFix2026 = () => {
   clearTimeout(cahierDateFixTimer);
-  cahierDateFixTimer = window.setTimeout(() => {
-    pushNewClassesToTroncCommun();
-    fixCahierDates2026();
-  }, 220);
+  cahierDateFixTimer = window.setTimeout(fixCahierDates2026, 220);
+};
+
+const handleTimetableChanged = () => {
+  pushNewClassesToTroncCommun();
+  window.requestAnimationFrame(pushNewClassesToTroncCommun);
+  scheduleCahierDateFix2026();
 };
 
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', scheduleCahierDateFix2026, { once: true });
+  document.addEventListener('DOMContentLoaded', () => {
+    pushNewClassesToTroncCommun();
+    scheduleCahierDateFix2026();
+  }, { once: true });
 } else {
+  pushNewClassesToTroncCommun();
   scheduleCahierDateFix2026();
 }
 
-window.setTimeout(scheduleCahierDateFix2026, 600);
-window.setTimeout(scheduleCahierDateFix2026, 1400);
-window.setTimeout(scheduleCahierDateFix2026, 2600);
+window.setTimeout(handleTimetableChanged, 600);
+window.setTimeout(handleTimetableChanged, 1400);
+window.setTimeout(handleTimetableChanged, 2600);
 
 document.addEventListener('input', (event) => {
-  if (event.target?.closest?.('.timetable-table')) scheduleCahierDateFix2026();
-}, { passive: true });
-document.addEventListener('drop', scheduleCahierDateFix2026, { passive: true });
-document.addEventListener('mouseup', scheduleCahierDateFix2026, { passive: true });
+  if (event.target?.closest?.('.timetable-table')) handleTimetableChanged();
+}, { passive: true, capture: true });
+document.addEventListener('drop', handleTimetableChanged, { passive: true });
+document.addEventListener('mouseup', handleTimetableChanged, { passive: true });
