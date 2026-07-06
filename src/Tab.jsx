@@ -151,6 +151,11 @@ const isInsideMandatoryEventAfterStart = (monthDate) => MANDATORY_EVENTS.some((e
   const date = getMonthDateAsSchoolDate(monthDate);
   return date > getMonthDateAsSchoolDate(event.start) && date <= getMonthDateAsSchoolDate(event.end);
 });
+const isInsideHolidayEvent = (monthDate) => MANDATORY_EVENTS.some((event) => {
+  if (event.type !== 'holiday') return false;
+  const date = getMonthDateAsSchoolDate(monthDate);
+  return date >= getMonthDateAsSchoolDate(event.start) && date <= getMonthDateAsSchoolDate(event.end);
+});
 
 export default function Tab() {
   const [school, setSchool] = useState('Établissement :');
@@ -229,7 +234,6 @@ export default function Tab() {
     const entries = getSchoolHomeworkDates().flatMap((date) => {
       const dayIndex = getMondayBasedDayIndex(date);
       const monthDate = formatMonthDate(date);
-      if (isInsideMandatoryEventAfterStart(monthDate)) return [];
 
       const eventEntries = getMandatoryEventStart(monthDate).map((event, eventIndex) => {
         const endDate = getMonthDateAsSchoolDate(event.end);
@@ -237,6 +241,8 @@ export default function Tab() {
         return { date: displayDate, sessions: [{ hour: event.label, className: '' }], text: event.text, isHoliday: event.type === 'holiday', isExam: event.type === 'exam', progressDate: event.start, color: event.type === 'exam' ? '#38bdf8' : '#f97316', eventKey: `${event.start}-${eventIndex}` };
       });
 
+      if (isInsideMandatoryEventAfterStart(monthDate) && !eventEntries.length) return [];
+      if (isInsideHolidayEvent(monthDate)) return eventEntries;
       if (dayIndex >= rows.length || !classSet.size) return eventEntries;
       const sessions = (sessionsByDay[dayIndex] ?? []).filter((session) => classSet.has(session.className));
       if (!sessions.length) return eventEntries;
