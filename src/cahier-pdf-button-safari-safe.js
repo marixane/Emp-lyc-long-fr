@@ -2,6 +2,7 @@ const PDF_BUTTON_ID = 'cahier-pdf-button-stable';
 const A4_WIDTH = '210mm';
 const A4_HEIGHT = '297mm';
 const EXIT_TEXT = 'Signature du Procès-verbal de sortie';
+const EXIT_DATE = 'SAMEDI 10/07';
 
 const EXPORT_CSS = `
   @page { size: ${A4_WIDTH} ${A4_HEIGHT}; margin: 0; }
@@ -84,14 +85,14 @@ const makeExitPage = (sourcePage) => {
   page.style.cssText = `position:relative;padding-top:60px;--group-color:${color};`;
 
   const header = sourcePage?.firstElementChild?.cloneNode(true) || document.createElement('div');
-  if (!header.textContent?.trim()) header.textContent = 'Administration';
+  if (!header.textContent?.trim()) header.textContent = 'Lycée';
   page.append(header);
 
   const section = document.createElement('section');
   section.className = 'homework-entry cahier-extra-holiday-entry';
   section.dataset.sort = '20270710';
-  section.style.setProperty('--homework-color', '#f97316');
-  section.innerHTML = '<div class="homework-date">SAMEDI 10/07</div><div class="homework-content"><div class="homework-subject"><div><span>Administration</span></div></div><div class="homework-text" style="color:#9a3412;font-size:21px;font-weight:900;text-align:center;background:linear-gradient(90deg,rgba(254,215,170,.38),rgba(254,243,199,.62));border-radius:12px;margin:8px 18px;padding:10px 16px">' + EXIT_TEXT + '</div></div>';
+  section.style.setProperty('--homework-color', '#38bdf8');
+  section.innerHTML = '<div class="homework-date">' + EXIT_DATE + '</div><div class="homework-content"><div class="homework-subject"><div><span>Lycée</span></div></div><div class="homework-text" style="color:#1e3a8a;font-size:21px;font-weight:900;text-align:center;background:linear-gradient(90deg,rgba(191,219,254,.45),rgba(219,234,254,.82));border:1px solid rgba(37,99,235,.28);border-radius:12px;margin:8px 18px;padding:10px 16px">' + EXIT_TEXT + '</div></div>';
   page.append(section);
   return page;
 };
@@ -116,13 +117,12 @@ const appendExitPageForEachGroup = (zone) => {
   });
 };
 
-const ensurePdfEndsOnJuly10 = (zone) => {
+const ensurePdfIncludesJuly10 = (zone) => {
   const text = String(zone.textContent || '');
-  if (text.includes('10/07') && text.includes(EXIT_TEXT)) return;
+  if (text.includes(EXIT_DATE) && text.includes(EXIT_TEXT)) return;
 
   const lastHomeworkPage = Array.from(zone.querySelectorAll('.homework-page')).pop();
-  const finalPage = makeExitPage(lastHomeworkPage);
-  zone.append(finalPage);
+  zone.append(makeExitPage(lastHomeworkPage));
 };
 
 const buildExportHtml = () => {
@@ -149,7 +149,7 @@ const buildExportHtml = () => {
 
   removeAfterJuly10(zone);
   appendExitPageForEachGroup(zone);
-  ensurePdfEndsOnJuly10(zone);
+  ensurePdfIncludesJuly10(zone);
 
   return `<style>${getCss()}\n${EXPORT_CSS}</style>${zone.outerHTML}`;
 };
