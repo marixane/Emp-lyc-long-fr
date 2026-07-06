@@ -90,5 +90,3 @@ else scheduleLightCovers();
 window.setTimeout(applyLightCovers, 1000);
 window.setTimeout(applyLightCovers, 2500);
 window.setTimeout(applyLightCovers, 5000);
-document.addEventListener('change', scheduleLightCovers, { passive: true });
-document.addEventListener('drop', scheduleLightCovers, { passive: true });
