@@ -51,18 +51,12 @@ const makeJulyEntry = ({ date, subject, text, type }) => {
 };
 
 const getJulyEntries = (group) => {
-  const entries = [
-    { date: 'JEUDI 01/07 - SAMEDI 03/07', subject: 'Lycée', text: 'Rattrapage : 2ème Bac', type: 'exam' }
-  ];
+  const entries = [];
 
   for (let day = 4; day <= 10; day += 1) {
     const date = new Date(2027, 6, day);
     if (date.getDay() === 0) continue;
     const monthDate = `${String(day).padStart(2, '0')}/07`;
-    if (day === 30) {
-      entries.push({ date: 'VENDREDI 30/07', subject: 'Nationale', text: 'Fête nationale : Fête du Trône', type: 'holiday' });
-      continue;
-    }
     entries.push({ date: `${JULY_DAYS[date.getDay()]} ${monthDate}`, subject: group.classes.join(' / '), text: JULY_DOTS, type: '' });
   }
   return entries;
