@@ -66,9 +66,33 @@ const applyCahierExamsFooter = () => {
   return true;
 };
 
+const getEntryFirstDateKey = (entry) => {
+  const dateText = String(entry.querySelector('.homework-date')?.textContent || '');
+  const match = dateText.match(/(\d{2})\/(\d{2})/);
+  return match ? `${match[1]}/${match[2]}` : '';
+};
+
+const isHolidayOrExamEntry = (entry) => entry.classList.contains('cahier-extra-holiday-entry') || entry.classList.contains('cahier-exam-entry') || /vacance|examen|rattrapage/i.test(String(entry.querySelector('.homework-text')?.textContent || ''));
+
+const removeClassEntriesOnEventDays = () => {
+  if (!document.body.classList.contains('cahier-tab-active')) return;
+
+  document.querySelectorAll('.homework-page').forEach((page) => {
+    const entries = Array.from(page.querySelectorAll('.homework-entry'));
+    const eventDates = new Set(entries.filter(isHolidayOrExamEntry).map(getEntryFirstDateKey).filter(Boolean));
+
+    entries.forEach((entry) => {
+      if (isHolidayOrExamEntry(entry)) return;
+      const key = getEntryFirstDateKey(entry);
+      if (eventDates.has(key)) entry.remove();
+    });
+  });
+};
+
 let examsFooterRetryCount = 0;
 const scheduleCahierExamsFooter = () => window.requestAnimationFrame(() => {
   const done = applyCahierExamsFooter();
+  removeClassEntriesOnEventDays();
   if (!done && examsFooterRetryCount < 18) {
     examsFooterRetryCount += 1;
     window.setTimeout(scheduleCahierExamsFooter, 250);
@@ -81,4 +105,9 @@ if (document.readyState === 'loading') {
   scheduleCahierExamsFooter();
 }
 
-document.addEventListener('click', () => window.setTimeout(scheduleCahierExamsFooter, 120), { passive: true });
+window.setTimeout(scheduleCahierExamsFooter, 500);
+window.setTimeout(scheduleCahierExamsFooter, 1500);
+window.setTimeout(scheduleCahierExamsFooter, 3000);
+document.addEventListener('input', () => window.setTimeout(scheduleCahierExamsFooter, 160), { passive: true });
+document.addEventListener('drop', () => window.setTimeout(scheduleCahierExamsFooter, 220), { passive: true });
+document.addEventListener('mouseup', () => window.setTimeout(scheduleCahierExamsFooter, 220), { passive: true });
