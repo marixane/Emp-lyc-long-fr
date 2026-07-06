@@ -45,6 +45,11 @@ const createCoverPage = () => {
       <div class="cahier-cover-classes-title">Classes remplies dans l'emploi du temps</div>
       <div class="cahier-cover-classes-list"></div>
     </div>
+    <div class="cahier-cover-level-buttons">
+      <button type="button">Primaire</button>
+      <button type="button">Collège</button>
+      <button type="button">Lycée</button>
+    </div>
   `;
   return page;
 };
