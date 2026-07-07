@@ -1,4 +1,4 @@
-import './cahier-progress-sept-may-v2.js';
+import './cahier-progress-sept-may-v3.js';
 
 const SECOND_PAGE_ID = 'cahier-exams-groups-page';
 const SECOND_PAGE_TITLE_CLASS = 'cahier-exams-groups-main-title';
