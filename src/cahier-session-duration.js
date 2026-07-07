@@ -36,8 +36,8 @@ const fitNonHourLabel = (node) => {
   node.style.setProperty('font-size', '12px', 'important');
 
   let size = 12;
-  const availableWidth = Math.max(node.clientWidth - 8, 0);
-  while (size > 8 && node.scrollWidth > availableWidth) {
+  const availableWidth = Math.max(node.clientWidth - 2, 0);
+  while (size > 10 && node.scrollWidth > availableWidth) {
     size -= 1;
     node.style.setProperty('font-size', `${size}px`, 'important');
   }
