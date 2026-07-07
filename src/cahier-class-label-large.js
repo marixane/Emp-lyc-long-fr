@@ -3,11 +3,12 @@ const resizeClassLabels = () => {
 
   document.querySelectorAll('.homework-subject > div').forEach((line) => {
     const label = line.querySelector('span:nth-child(2)');
-    if (!label) return;
+    const duration = line.querySelector('.cahier-session-duration');
+    if (!label || !duration) return;
 
     const count = line.parentElement?.children?.length || 1;
-    const startSize = count >= 4 ? 8 : count === 3 ? 12 : 16;
-    const minSize = 8;
+    const startSize = count >= 4 ? 18 : count === 3 ? 22 : 26;
+    const minSize = 6;
 
     label.style.setProperty('font-weight', '900', 'important');
     label.style.setProperty('transform', 'none', 'important');
@@ -17,7 +18,9 @@ const resizeClassLabels = () => {
 
     const styles = getComputedStyle(label);
     const padding = parseFloat(styles.paddingLeft || 0) + parseFloat(styles.paddingRight || 0);
-    const availableWidth = Math.max(label.getBoundingClientRect().width - padding - 2, 0);
+    const labelRect = label.getBoundingClientRect();
+    const durationRect = duration.getBoundingClientRect();
+    const availableWidth = Math.max(durationRect.left - labelRect.left - padding - 3, 0);
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d');
 
@@ -36,6 +39,13 @@ const resizeClassLabels = () => {
       }
 
       label.style.setProperty('font-size', `${size}px`, 'important');
+
+      const measuredWidth = context.measureText(text).width;
+      if (measuredWidth > availableWidth && measuredWidth > 0) {
+        const scale = availableWidth / measuredWidth;
+        label.style.setProperty('transform', `scaleX(${scale})`, 'important');
+        label.style.setProperty('transform-origin', 'left center', 'important');
+      }
     }
   });
 };
