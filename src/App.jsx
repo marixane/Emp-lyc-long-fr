@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import Tab from './Tab.jsx';
+import TabWithFullDates from './TabWithFullDates.jsx';
 
 export default function App() {
   useEffect(() => {
@@ -11,5 +11,5 @@ export default function App() {
     };
   }, []);
 
-  return <Tab />;
+  return <TabWithFullDates />;
 }
