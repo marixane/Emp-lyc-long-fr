@@ -116,6 +116,7 @@ import './cahier-event-badge-center.css';
 import './cahier-pdf-button-safari-safe.js';
 import './cahier-pdf-class-size-fix.js';
 import './cahier-first-saturday-visibility.js';
+import './cahier-hide-drop-placeholder.js';
 
 // Désactivé : ce helper DOM faisait buguer l'ajout de plusieurs séances.
 // import './cahier-group-cover-july10-light.js';
