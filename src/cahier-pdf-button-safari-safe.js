@@ -243,9 +243,7 @@ const downloadBlob = (blob) => {
 };
 
 const previewHtml = (html, previewWindow) => {
-  const previewDocument = previewWindow.document;
-  previewDocument.open();
-  previewDocument.write(`<!doctype html>
+  const previewPage = `<!doctype html>
     <html lang="fr">
       <head>
         <meta charset="utf-8">
@@ -266,8 +264,10 @@ const previewHtml = (html, previewWindow) => {
         <div class="pdf-toolbar"><span>Aperçu PDF du cahier de texte</span><a href="#" onclick="window.print();return false">Imprimer / Enregistrer en PDF</a></div>
         ${html}
       </body>
-    </html>`);
-  previewDocument.close();
+    </html>`;
+  const previewUrl = URL.createObjectURL(new Blob([previewPage], { type: 'text/html;charset=utf-8' }));
+  previewWindow.location.replace(previewUrl);
+  window.setTimeout(() => URL.revokeObjectURL(previewUrl), 600000);
 };
 
 const exportPdf = async (button, mode = 'download') => {
