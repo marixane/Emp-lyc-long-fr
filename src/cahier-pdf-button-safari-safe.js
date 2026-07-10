@@ -242,9 +242,7 @@ const downloadBlob = (blob) => {
   window.setTimeout(() => URL.revokeObjectURL(url), 1500);
 };
 
-const previewBlob = (blob, previewWindow) => {
-  const pdfBlob = blob.type === 'application/pdf' ? blob : new Blob([blob], { type: 'application/pdf' });
-  const url = URL.createObjectURL(pdfBlob);
+const previewHtml = (html, previewWindow) => {
   const previewDocument = previewWindow.document;
   previewDocument.open();
   previewDocument.write(`<!doctype html>
@@ -252,21 +250,24 @@ const previewBlob = (blob, previewWindow) => {
       <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width,initial-scale=1">
+        <base href="${window.location.origin}/">
         <title>Aperçu PDF — Cahier de texte</title>
         <style>
-          html,body{width:100%;height:100%;margin:0;background:#334155;font-family:Arial,sans-serif;overflow:hidden}
-          .pdf-toolbar{height:48px;box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:#0f172a;color:#fff;font-weight:900}
-          .pdf-toolbar a{padding:8px 14px;border-radius:9px;background:#16a34a;color:#fff;text-decoration:none;box-shadow:0 3px 0 #14532d}
-          iframe{display:block;width:100%;height:calc(100% - 48px);border:0;background:#fff}
+          html,body{margin:0;background:#475569;font-family:Arial,sans-serif}
+          body{padding:64px 20px 28px}
+          .pdf-toolbar{position:fixed;inset:0 0 auto 0;z-index:999999;height:48px;box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:#0f172a;color:#fff;font-weight:900;box-shadow:0 3px 12px rgba(0,0,0,.35)}
+          .pdf-toolbar a{padding:8px 14px;border-radius:9px;background:#16a34a;color:#fff;font-weight:900;text-decoration:none;cursor:pointer;box-shadow:0 3px 0 #14532d}
+          .cahier-preview-zone{margin:0 auto!important}
+          .a4-page,.cahier-page{margin:0 auto 24px!important;box-shadow:0 8px 28px rgba(0,0,0,.32)!important}
+          @media print{body{padding:0;background:#fff}.pdf-toolbar{display:none!important}.a4-page,.cahier-page{margin:0!important;box-shadow:none!important}}
         </style>
       </head>
       <body>
-        <div class="pdf-toolbar"><span>Aperçu du cahier de texte</span><a href="${url}" download="Cahier-de-texte-2026-2027.pdf">Télécharger</a></div>
-        <iframe src="${url}" title="Aperçu du PDF"></iframe>
+        <div class="pdf-toolbar"><span>Aperçu PDF du cahier de texte</span><a href="#" onclick="window.print();return false">Imprimer / Enregistrer en PDF</a></div>
+        ${html}
       </body>
     </html>`);
   previewDocument.close();
-  previewWindow.addEventListener('beforeunload', () => URL.revokeObjectURL(url), { once: true });
 };
 
 const exportPdf = async (button, mode = 'download') => {
@@ -287,6 +288,15 @@ const exportPdf = async (button, mode = 'download') => {
   try {
     if (document.fonts?.ready) await document.fonts.ready;
     const html = buildExportHtml();
+
+    if (mode === 'preview') {
+      button.textContent = 'Ouverture PDF...';
+      previewHtml(html, previewWindow);
+      button.textContent = 'PDF ouvert';
+      window.setTimeout(() => { button.textContent = original; }, 900);
+      return;
+    }
+
     button.textContent = 'Génération PDF...';
 
     const response = await fetch('/api/cahier-pdf', {
@@ -302,15 +312,9 @@ const exportPdf = async (button, mode = 'download') => {
     }
 
     const blob = await response.blob();
-    if (mode === 'preview') {
-      button.textContent = 'Ouverture PDF...';
-      previewBlob(blob, previewWindow);
-      button.textContent = 'PDF ouvert';
-    } else {
-      button.textContent = 'Téléchargement...';
-      downloadBlob(blob);
-      button.textContent = 'PDF téléchargé';
-    }
+    button.textContent = 'Téléchargement...';
+    downloadBlob(blob);
+    button.textContent = 'PDF téléchargé';
     window.setTimeout(() => { button.textContent = original; }, 900);
   } catch (error) {
     if (previewWindow && !previewWindow.closed) previewWindow.close();
