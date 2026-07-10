@@ -4,6 +4,7 @@ const SECOND_PAGE_ID = 'cahier-exams-groups-page';
 const SECOND_PAGE_TITLE_CLASS = 'cahier-exams-groups-main-title';
 
 const findTimetablePage = () => document.querySelector('.timetable-table')?.closest?.('.a4-page.cahier-page');
+const findPreviewZone = () => document.querySelector('.cahier-preview-zone');
 
 const findGroupsBlock = (page) => Array.from(page?.children || []).find((node) => {
   if (node.id === SECOND_PAGE_ID || node.classList?.contains(SECOND_PAGE_TITLE_CLASS)) return false;
@@ -32,6 +33,12 @@ const getOrCreateSecondPage = (timetablePage) => {
   return page;
 };
 
+const movePageToEnd = (page) => {
+  const previewZone = findPreviewZone();
+  if (!previewZone || !page) return;
+  if (previewZone.lastElementChild !== page) previewZone.append(page);
+};
+
 const makeSecondPage = () => {
   const timetablePage = findTimetablePage();
   if (!timetablePage) return;
@@ -46,6 +53,8 @@ const makeSecondPage = () => {
 
   if (examList.parentElement !== secondPage) secondPage.append(examList);
   if (groups.parentElement !== secondPage) secondPage.append(groups);
+
+  movePageToEnd(secondPage);
 };
 
 const scheduleSecondPage = () => {
