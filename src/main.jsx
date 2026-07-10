@@ -111,9 +111,10 @@ import './cahier-event-badge-center.css';
 // Désactivé : ce guard DOM peut bloquer Safari pendant la saisie.
 // import './cahier-hide-holiday-session-duplicates.js';
 
+// La page finale doit être préparée avant que le générateur PDF lise les pages.
+import './cahier-exams-last-in-pdf.js';
 // Les deux boutons PDF utilisent la même fonction de génération.
 import './cahier-pdf-button-safari-safe.js';
-import './cahier-exams-last-in-pdf.js';
 import './cahier-pdf-class-size-fix.js';
 import './cahier-first-saturday-visibility.js';
 import './cahier-pdf-compact-timetable.css';
