@@ -1,0 +1,4 @@
+.timetable-table textarea::placeholder {
+  color: transparent !important;
+  opacity: 0 !important;
+}
