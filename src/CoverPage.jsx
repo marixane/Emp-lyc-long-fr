@@ -18,11 +18,21 @@ export default function CoverPage() {
             <div style={styles.adminBlock}>
               <label style={styles.adminRow}>
                 <strong>Académie régionale :</strong>
-                <input type="text" aria-label="Académie régionale" style={styles.adminInput} />
+                <input
+                  type="text"
+                  aria-label="Académie régionale"
+                  defaultValue="Tanger Tetouan Al Hoceima"
+                  style={styles.adminInput}
+                />
               </label>
               <label style={styles.adminRow}>
                 <strong>Direction provinciale :</strong>
-                <input type="text" aria-label="Direction provinciale" style={styles.adminInput} />
+                <input
+                  type="text"
+                  aria-label="Direction provinciale"
+                  defaultValue="Tanger Assilah"
+                  style={styles.adminInput}
+                />
               </label>
             </div>
           </header>
@@ -72,7 +82,7 @@ const styles = {
     objectPosition: 'left top'
   },
   adminBlock: {
-    width: '560px',
+    width: '620px',
     maxWidth: '100%',
     display: 'grid',
     gap: '6px',
@@ -82,14 +92,14 @@ const styles = {
   },
   adminRow: {
     display: 'grid',
-    gridTemplateColumns: '190px minmax(0, 1fr)',
+    gridTemplateColumns: 'max-content minmax(0, 1fr)',
     alignItems: 'center',
-    gap: '8px'
+    gap: '2px'
   },
   adminInput: {
     width: '100%',
     minWidth: 0,
-    padding: '2px 4px',
+    padding: '2px 0',
     boxSizing: 'border-box',
     border: 'none',
     outline: 'none',
