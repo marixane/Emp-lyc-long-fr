@@ -66,8 +66,8 @@ const styles = {
   },
   ministryImage: {
     display: 'block',
-    width: '285px',
-    maxHeight: '190px',
+    width: '342px',
+    maxHeight: '228px',
     objectFit: 'contain',
     objectPosition: 'left top'
   },
