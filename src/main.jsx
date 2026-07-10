@@ -115,11 +115,15 @@ import './cahier-event-badge-center.css';
 // Il ne modifie les pages qu'au moment de générer le PDF.
 import './cahier-pdf-button-safari-safe.js';
 import './cahier-pdf-class-size-fix.js';
-import './cahier-first-saturday-visibility.js';
-import './cahier-hide-drop-placeholder.js';
+
+// Styles visuels uniquement : aucun script DOM pendant la saisie.
 import './cahier-hide-drop-placeholder.css';
 import './cahier-hide-class-placeholder.css';
-import './cahier-empty-class-placeholder.js';
+
+// Désactivés : ces scripts DOM pouvaient bloquer la saisie des classes.
+// import './cahier-first-saturday-visibility.js';
+// import './cahier-hide-drop-placeholder.js';
+// import './cahier-empty-class-placeholder.js';
 
 // Désactivé : ce helper DOM faisait buguer l'ajout de plusieurs séances.
 // import './cahier-group-cover-july10-light.js';
