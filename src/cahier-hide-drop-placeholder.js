@@ -5,66 +5,35 @@ const normalize = (value) => String(value || '')
   .toLowerCase();
 
 const isDropPlaceholder = (value) => normalize(value) === 'deposer ici';
+const SPACE = '\u00a0';
 
-const removeDropPlaceholder = (root = document) => {
-  const walker = document.createTreeWalker(
-    root,
-    NodeFilter.SHOW_TEXT,
-    {
-      acceptNode(node) {
-        return isDropPlaceholder(node.nodeValue)
-          ? NodeFilter.FILTER_ACCEPT
-          : NodeFilter.FILTER_REJECT;
-      }
-    }
-  );
-
+const replaceDropPlaceholder = (root = document) => {
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
   const nodes = [];
-  while (walker.nextNode()) nodes.push(walker.currentNode);
+
+  while (walker.nextNode()) {
+    if (isDropPlaceholder(walker.currentNode.nodeValue)) nodes.push(walker.currentNode);
+  }
 
   nodes.forEach((node) => {
-    node.nodeValue = '';
+    node.nodeValue = SPACE;
     node.parentElement?.setAttribute('aria-label', 'Zone de dépôt');
   });
 };
 
-let scheduled = false;
-const scheduleRemoval = () => {
-  if (scheduled) return;
-  scheduled = true;
-  requestAnimationFrame(() => {
-    scheduled = false;
-    removeDropPlaceholder();
-  });
-};
+const run = () => replaceDropPlaceholder(document);
 
-const observer = new MutationObserver((mutations) => {
-  for (const mutation of mutations) {
-    if (mutation.type === 'characterData' && isDropPlaceholder(mutation.target.nodeValue)) {
-      mutation.target.nodeValue = '';
-      mutation.target.parentElement?.setAttribute('aria-label', 'Zone de dépôt');
-      continue;
-    }
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', run, { once: true });
+} else {
+  run();
+}
 
-    mutation.addedNodes.forEach((node) => {
-      if (node.nodeType === Node.TEXT_NODE && isDropPlaceholder(node.nodeValue)) {
-        node.nodeValue = '';
-        node.parentElement?.setAttribute('aria-label', 'Zone de dépôt');
-      } else if (node.nodeType === Node.ELEMENT_NODE) {
-        removeDropPlaceholder(node);
-      }
-    });
-  }
-});
-
+const observer = new MutationObserver(run);
 observer.observe(document.documentElement, {
   childList: true,
   characterData: true,
   subtree: true
 });
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', scheduleRemoval, { once: true });
-} else {
-  scheduleRemoval();
-}
+window.setInterval(run, 250);
