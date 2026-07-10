@@ -35,7 +35,7 @@ const arrangeTimetableControls = () => {
   total.style.setProperty('font-size', '20px', 'important');
   total.style.setProperty('font-weight', '800', 'important');
   total.style.setProperty('color', '#0f172a', 'important');
-  total.style.setProperty('transform', 'translateX(30px)', 'important');
+  total.style.setProperty('transform', 'translateX(200px)', 'important');
 
   return page;
 };
